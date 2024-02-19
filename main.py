@@ -13,13 +13,37 @@ from bs4 import BeautifulSoup
 # review_rating
 # image_url
 
-page = requests.get(
-    "https://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html"
-)
+
+def get_book():
+    page = requests.get(
+        "https://books.toscrape.com/catalogue/mesaerion-the-best-science-fiction-stories-1800-1849_983/index.html"
+    )
+
+    soup = BeautifulSoup(page.text, "html.parser")
+
+    title = soup.select_one("h1").text
+    universal_product_code = soup.select_one("table tr:first-child td").text
+    price_including_tax = soup.select_one("table tr:nth-child(3) td").text
+    price_excluding_tax = soup.select_one("table tr:nth-child(4) td").text
+    number_available = soup.select_one("table tr:nth-child(6) td").text
+    product_description = soup.select_one(".product_page > p").text
+    category = soup.select_one(".breadcrumb li:nth-child(3) a").text
+    review_rating = soup.select_one(".star-rating").text
+    image_url = [img["src"] for img in soup.select(".carousel-inner img[src]")][0]
+
+    book_info = {
+        "title": title,
+        "universal_product_code": universal_product_code,
+        "price_including_tax": price_including_tax,
+        "price_excluding_tax": price_excluding_tax,
+        "number_available": number_available,
+        "product_description": product_description,
+        "category": category,
+        "review_rating": review_rating,
+        "image_url": image_url,
+    }
+    return book_info
 
 
-soup = BeautifulSoup(page.text, "html.parser")
-
-price = soup.css.select(".product_main .price_color")
-
-print(price)
+book_data = get_book()
+print(book_data)
