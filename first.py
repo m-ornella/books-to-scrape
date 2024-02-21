@@ -3,10 +3,9 @@ from bs4 import BeautifulSoup
 import csv
 
 
-def get_book(sub_url):
-
-    base_url = "https://books.toscrape.com/catalogue/"
-    page = requests.get(base_url + sub_url + "/index.html")
+# get single book details
+def get_book(url):
+    page = requests.get(url)
 
     soup = BeautifulSoup(page.text, "html.parser")
 
@@ -33,7 +32,7 @@ def get_book(sub_url):
         "product_description": product_description,
         "category": category,
         "review_rating": review_rating,
-        "image_url3456789": image_url,
+        "image_url": image_url[5:],
     }
 
     with open("book.csv", "w") as f:
@@ -43,5 +42,7 @@ def get_book(sub_url):
     return book_info
 
 
-book_data = get_book("mesaerion-the-best-science-fiction-stories-1800-1849_983")
+book_data = get_book(
+    "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
+)
 print(book_data)
