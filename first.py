@@ -33,16 +33,14 @@ def get_book(sub_url):
         "product_description": product_description,
         "category": category,
         "review_rating": review_rating,
-        "image_url": image_url,
+        "image_url3456789": image_url,
     }
 
-    return book_info
-
-
-def write_book_info_to_csv(book_info, filename="book.csv"):
-    with open(filename, "w") as f:
+    with open("book.csv", "w") as f:
         for key, value in book_info.items():
             f.write(f"{key},{value}\n")
+
+    return book_info
 
 
 book_data = get_book("mesaerion-the-best-science-fiction-stories-1800-1849_983")
