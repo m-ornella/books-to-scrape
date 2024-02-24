@@ -9,6 +9,7 @@ def get_book(url):
 
     soup = BeautifulSoup(page.text, "html.parser")
 
+    # retrieves single book details using selectors
     title = soup.select_one("h1").text
     universal_product_code = soup.select_one("table tr:first-child td").text
     price_including_tax = soup.select_one("table tr:nth-child(3) td").text.replace(
@@ -23,6 +24,7 @@ def get_book(url):
     review_rating = soup.find("p", class_="star-rating")["class"][1]
     image_url = [img["src"] for img in soup.select(".carousel-inner img[src]")][0]
 
+    # dictionary
     book_info = {
         "title": title,
         "universal_product_code": universal_product_code,
@@ -35,6 +37,7 @@ def get_book(url):
         "image_url": image_url[5:],
     }
 
+    # csv file
     with open("book.csv", "w") as f:
         for key, value in book_info.items():
             f.write(f"{key},{value}\n")
@@ -42,6 +45,7 @@ def get_book(url):
     return book_info
 
 
+# replace url with any single book url
 book_data = get_book(
     "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
 )
