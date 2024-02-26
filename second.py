@@ -66,6 +66,6 @@ def write_books_to_csv(books, filename="books_by_category.csv"):
         writer.writerows(books)
 
 
-book_details = get_books_by_category("mystery", "3")
-print(book_details)
-write_books_to_csv(book_details)
+# book_details = get_books_by_category("mystery", "3")
+# print(book_details)
+# write_books_to_csv(book_details)
