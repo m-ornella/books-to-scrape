@@ -90,22 +90,25 @@ def get_all_books_from_all_categories() -> list[dict]:
         all_books_details = get_books_by_category(category_name, category_id)
         # print(category_infos)
         all_books.append(all_books_details)
-        print(all_books_details)
 
     return all_books
 
 
 # Write book details to a CSV file
 def write_all_books_to_csv(all_books_details, filename="all_books.csv"):
-    with open(filename, "w", newline="", encoding="utf-8") as csvfile:
-        fieldnames = all_books_details[0].keys() if all_books_details else []
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-
+    with open(filename, "w", newline="", encoding="utf-8") as f:
         # Write header
-        writer.writeheader()
+        f.write(
+            "title,universal_product_code,price_including_tax,price_excluding_tax,number_available,product_description,category,review_rating,image_url\n"
+        )
 
         # Write book details
-        writer.writerows(all_books_details)
+        for category in all_books_details:
+            for book in category:
+                # Write book details in array format
+                f.write(
+                    f"{book['title']},{book['universal_product_code']},{book['price_including_tax']},{book['price_excluding_tax']},{book['number_available']},{book['product_description']},{book['category']},{book['review_rating']},{book['image_url']}\n"
+                )
 
 
 # testing navigate_through_all_categories()
@@ -113,4 +116,5 @@ def write_all_books_to_csv(all_books_details, filename="all_books.csv"):
 # print(urls)
 
 all_books = get_all_books_from_all_categories()
+write_all_books_to_csv(all_books)
 print(all_books)
