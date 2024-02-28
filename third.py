@@ -95,10 +95,22 @@ def get_all_books_from_all_categories() -> list[dict]:
     return all_books
 
 
+# Write book details to a CSV file
+def write_all_books_to_csv(all_books_details, filename="all_books.csv"):
+    with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+        fieldnames = all_books_details[0].keys() if all_books_details else []
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        # Write header
+        writer.writeheader()
+
+        # Write book details
+        writer.writerows(all_books_details)
+
+
 # testing navigate_through_all_categories()
 # urls = navigate_through_all_categories()
 # print(urls)
 
 all_books = get_all_books_from_all_categories()
 print(all_books)
-# write_all_books_to_csv(all_books, "all_books.csv")

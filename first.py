@@ -6,6 +6,7 @@ import csv
 # get single book details
 def get_book(url):
     page = requests.get(url)
+    product_description = ""
 
     soup = BeautifulSoup(page.text, "html.parser")
 
@@ -19,7 +20,9 @@ def get_book(url):
         "Â£", ""
     )
     number_available = soup.select_one("table tr:nth-child(6) td").text
-    product_description = soup.select_one(".product_page > p").text
+    if soup.select_one(".product_page > p") is not None:
+        product_description = soup.select_one(".product_page > p").text
+
     category = soup.select_one(".breadcrumb li:nth-child(3) a").text
     review_rating = soup.find("p", class_="star-rating")["class"][1]
     image_url = [img["src"] for img in soup.select(".carousel-inner img[src]")][0]
@@ -46,7 +49,7 @@ def get_book(url):
 
 
 # replace url with any single book url
-book_data = get_book(
-    "https://books.toscrape.com/catalogue/the-metamorphosis_409/index.html"
-)
-print(book_data)
+# book_data = get_book(
+#     "https://books.toscrape.com/catalogue/the-metamorphosis_409/index.html"
+# )
+# print(book_data)
