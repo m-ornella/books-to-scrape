@@ -47,6 +47,6 @@ def get_book(url):
 
 # replace url with any single book url
 book_data = get_book(
-    "https://books.toscrape.com/catalogue/its-only-the-himalayas_981/index.html"
+    "https://books.toscrape.com/catalogue/the-metamorphosis_409/index.html"
 )
 print(book_data)

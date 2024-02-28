@@ -48,7 +48,9 @@ def get_books_by_category(category_name, category_id) -> list[dict]:
 
     for book_url in book_urls:
         book_details = get_book(book_url)
+        print(1)
         books.append(book_details)
+        print(2)
 
     return books
 
@@ -66,6 +68,6 @@ def write_books_to_csv(books, filename="books_by_category.csv"):
         writer.writerows(books)
 
 
-# book_details = get_books_by_category("mystery", "3")
-# print(book_details)
-# write_books_to_csv(book_details)
+book_details = get_books_by_category("classics", "6")
+print(book_details)
+write_books_to_csv(book_details)

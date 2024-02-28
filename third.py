@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 import csv
 
+from first import get_book
+
 
 # retrieving details from all books
 
@@ -15,8 +17,9 @@ def navigate_to_next_page(soup, category_name, category_id):
 
 
 # navigate to all category urls
-def navigate_through_all_categories(url) -> list[str]:
+def navigate_through_all_categories() -> list[str]:
 
+    url = "https://books.toscrape.com/index.html"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
 
@@ -76,11 +79,26 @@ def extract_category_infos(url) -> list[str, int]:
     return category_infos
 
 
-# def get_all_books_details(category_name, category_id, url):
-#     navigate_through_all_categories(url)
+# get all books infos from all categories
+def get_all_books_from_all_categories() -> list[dict]:
+    categories_infos_list = navigate_through_all_categories()
+    all_books = []
 
-#     return all_book_details
+    for category_infos in categories_infos_list:
+        category_name = category_infos[0]
+        category_id = category_infos[1]
+        all_books_details = get_books_by_category(category_name, category_id)
+        # print(category_infos)
+        all_books.append(all_books_details)
+        print(all_books_details)
+
+    return all_books
 
 
-urls = navigate_through_all_categories("https://books.toscrape.com/index.html")
-print(urls)
+# testing navigate_through_all_categories()
+# urls = navigate_through_all_categories()
+# print(urls)
+
+all_books = get_all_books_from_all_categories()
+print(all_books)
+# write_all_books_to_csv(all_books, "all_books.csv")
