@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import csv
+import matplotlib.pyplot as plt
 
 
 def extract_category_infos(url) -> list[str, int]:
@@ -123,11 +124,29 @@ def get_category_stats():
 category_stats = get_category_stats()
 
 # Print the category stats
-for category, stats in category_stats.items():
-    print(f"Category: {category}")
-    print(f"  Number of Books: {stats['num_books']}")
-    print(f"  Average Price: {stats['average_price']:.2f}")
-    print("\n")
+# for category, stats in category_stats.items():
+#     print(f"Category: {category}")
+#     print(f"  Number of Books: {stats['num_books']}")
+#     print(f"  Average Price: {stats['average_price']:.2f}")
+#     print("\n")
 
 # Run the function to write category stats to CSV
-write_category_stats_to_csv(category_stats)
+# write_category_stats_to_csv(category_stats)
+
+
+# stats graphic using matplotlib
+def plot_category_stats(category_stats):
+    categories = list(category_stats.keys())
+    num_books = [stats["num_books"] for stats in category_stats.values()]
+
+    plt.bar(categories, num_books)
+    plt.xlabel("Category")
+    plt.ylabel("Number of Books")
+    plt.title("Number of Books in Each Category")
+    plt.xticks(rotation=45, ha="right")
+    plt.tight_layout()
+
+    plt.show()
+
+
+plot_category_stats(category_stats)
