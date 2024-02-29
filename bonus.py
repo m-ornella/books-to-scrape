@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import csv
 
 
 def extract_category_infos(url) -> list[str, int]:
@@ -36,8 +37,8 @@ def get_book_price_and_category(soup):
         ).text.replace("Â£", "")
 
         book_info = {
-            "price_including_tax": price_including_tax,
             "category": category,
+            "price_including_tax": price_including_tax,
         }
 
         book_info_list.append(book_info)
@@ -64,27 +65,26 @@ def navigate_through_all_categories() -> list[dict]:
     return category_links
 
 
-def get_book_price_and_category_from_all_pages():
-    all_category_urls = navigate_through_all_categories()
+def write_category_stats_to_csv(category_stats):
+    with open(
+        "books_details_by_category.csv", mode="w", newline="", encoding="utf-8"
+    ) as csv_file:
+        fieldnames = ["Category", "Number of Books", "Average Price"]
+        writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
 
-    for category_info in all_category_urls:
-        category_name, category_id = category_info
-        url = f"https://books.toscrape.com/catalogue/category/books/{category_name}_{category_id}/index.html"
+        writer.writeheader()
 
-        while url:
-            page = requests.get(url)
-            soup = BeautifulSoup(page.text, "html.parser")
-
-            prices_and_categories = get_book_price_and_category(soup)
-
-            for price_and_category in prices_and_categories:
-                print(price_and_category)
-
-            # check for the next page
-            url = navigate_to_next_page(soup, category_name, category_id)
+        for category, stats in category_stats.items():
+            writer.writerow(
+                {
+                    "Category": category,
+                    "Number of Books": stats["num_books"],
+                    "Average Price": f"{stats['average_price']:.2f}",
+                }
+            )
 
 
-def get_book_stats_by_category():
+def get_category_stats():
     category_stats = {}
 
     all_category_urls = navigate_through_all_categories()
@@ -119,9 +119,15 @@ def get_book_stats_by_category():
     return category_stats
 
 
-category_stats = get_book_stats_by_category()
+# Run the function to get category stats
+category_stats = get_category_stats()
+
+# Print the category stats
 for category, stats in category_stats.items():
     print(f"Category: {category}")
     print(f"  Number of Books: {stats['num_books']}")
     print(f"  Average Price: {stats['average_price']:.2f}")
     print("\n")
+
+# Run the function to write category stats to CSV
+write_category_stats_to_csv(category_stats)
