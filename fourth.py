@@ -2,41 +2,38 @@ import requests
 from bs4 import BeautifulSoup
 
 
-# from third import extract_category_infos
 def extract_category_infos(url) -> list[str, int]:
     category_infos = url.split("/")[-2].split("_")
-
     return category_infos
 
 
-# get image urls
-def get_image_url():
-    page = requests.get("https://books.toscrape.com/index.html")
-    soup = BeautifulSoup(page.text, "html.parser")
+# next page logic
+def navigate_to_next_page(soup, category_name, category_id):
+    next_button = soup.find("li", class_="next")
+    if next_button and next_button.find("a"):
+        next_page_url = f"https://books.toscrape.com/catalogue/category/books/{category_name}_{category_id}/{next_button.find('a')['href']}"
+        return next_page_url
+    return None
 
+
+# get image urls
+def get_image_urls(soup):
     # Assuming the image is inside an element with class "image_container"
     image_urls = [img["src"] for img in soup.select(".image_container img[src]")]
 
-    for image_url in image_urls:
-        image_split_links = image_url
-        print(image_split_links)
+    # Modify the URLs to remove the initial characters
+    image_urls = [img[5:] for img in image_urls]
 
-    return image_split_links
-
-
-# url = get_image_url()
-# print(url)
+    return image_urls
 
 
 # navigate to all category urls
 def navigate_through_all_categories() -> list[dict]:
-
     url = "https://books.toscrape.com/index.html"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, "html.parser")
 
     base_url = "https://books.toscrape.com/"
-
     category_urls = soup.select(".nav-list li ul li a")
 
     category_links = []
@@ -49,23 +46,26 @@ def navigate_through_all_categories() -> list[dict]:
     return category_links
 
 
-# all_category_urls = navigate_through_all_categories()
-# print(all_category_urls)
+# retrieve all image urls from all categories
+def get_image_urls_from_all_categories():
+    all_category_urls = navigate_through_all_categories()
+
+    for category_info in all_category_urls:
+        category_name, category_id = category_info
+        url = f"https://books.toscrape.com/catalogue/category/books/{category_name}_{category_id}/index.html"
+
+        while url:
+            page = requests.get(url)
+            soup = BeautifulSoup(page.text, "html.parser")
+
+            # get and print image urls for the current page
+            image_urls = get_image_urls(soup)
+            print(f"Category: {category_name}, Page: {url}")
+            for idx, img_url in enumerate(image_urls, 1):
+                print(f"  Image {idx} URL: {img_url}")
+
+            # check for the next page
+            url = navigate_to_next_page(soup, category_name, category_id)
 
 
-def get_image_urls_from_all_categories(category_name, category_id):
-    url = f"https://books.toscrape.com/catalogue/category/books/{category_name}_{category_id}/index.html"
-    page = requests.get(url)
-    soup = BeautifulSoup(page.text, "html.parser")
-
-    category_urls_infos = navigate_through_all_categories()
-
-    for category_urls_info in category_urls_infos:
-        print(category_urls_info)
-        image_urls = get_image_url()
-        print(image_urls)
-
-    return category_urls_info
-
-
-categery_info = get_image_urls_from_all_categories("travel", "2")
+get_image_urls_from_all_categories()
