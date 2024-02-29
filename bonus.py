@@ -163,16 +163,7 @@ def plot_category_stats():
             top_categories["Category"], top_categories["Number of Books"]
         )
     ]
-    """
-    # categories = list(category_stats.keys())
-    num_books = [stats["Number of Books"] for stats in category_stats.values()]
 
-    plt.pie(num_books, labels=categories, autopct="%1.1f%%", startangle=140)
-    plt.axis("equal")  # Equal aspect ratio ensures that pie is drawn as a circle.
-    plt.title("Distribution of Books Across Categories")
-
-    plt.show()
-    """
     plt.figure(figsize=(10, 10))
     plt.pie(
         top_categories["Number of Books"],
