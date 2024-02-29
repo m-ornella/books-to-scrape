@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
+import os
 
 
 def extract_category_infos(url) -> list[str, int]:
@@ -18,11 +20,8 @@ def navigate_to_next_page(soup, category_name, category_id):
 
 # get image urls
 def get_image_urls(soup):
-    # Assuming the image is inside an element with class "image_container"
     image_urls = [img["src"] for img in soup.select(".image_container img[src]")]
-
-    # Modify the URLs to remove the initial characters
-    image_urls = [img[5:] for img in image_urls]
+    image_urls = [img[11:] for img in image_urls]
 
     return image_urls
 
@@ -46,7 +45,27 @@ def navigate_through_all_categories() -> list[dict]:
     return category_links
 
 
-# retrieve all image urls from all categories
+# download images into '/images' folder
+def download_image(url, folder_path):
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()
+
+        # Extract the filename from the URL
+        filename = url.split("/")[-1]
+
+        # Save the image to the specified folder
+        file_path = os.path.join(folder_path, filename)
+        with open(file_path, "wb") as file:
+            for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+
+        print(f"Downloaded: {filename}")
+    except Exception as e:
+        print(f"Error downloading {url}: {e}")
+
+
+# loop through all categories and download images
 def get_image_urls_from_all_categories():
     all_category_urls = navigate_through_all_categories()
 
@@ -58,11 +77,11 @@ def get_image_urls_from_all_categories():
             page = requests.get(url)
             soup = BeautifulSoup(page.text, "html.parser")
 
-            # get and print image urls for the current page
             image_urls = get_image_urls(soup)
-            print(f"Category: {category_name}, Page: {url}")
-            for idx, img_url in enumerate(image_urls, 1):
-                print(f"  Image {idx} URL: {img_url}")
+
+            for img_url in image_urls:
+                # download each image into '/images' folder
+                download_image(urljoin(url, img_url), "images")
 
             # check for the next page
             url = navigate_to_next_page(soup, category_name, category_id)
